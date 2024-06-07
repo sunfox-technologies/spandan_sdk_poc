@@ -251,10 +251,30 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Show Conclusion"
-                android:visibility="visible"
                 app:layout_constraintTop_toBottomOf="@id/activity_main_btn_generate_report"
                 app:layout_constraintStart_toStartOf="@id/activity_main_btn_generate_report"
                 app:layout_constraintEnd_toEndOf="@id/activity_main_btn_generate_report"/>
+
+            <Button
+                android:id="@+id/validate_test"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="complete the test"
+                android:textAllCaps="false"
+                app:layout_constraintTop_toBottomOf="@id/activity_main_btn_start_test"
+                app:layout_constraintStart_toStartOf="@id/activity_main_btn_start_test"
+                app:layout_constraintEnd_toEndOf="@id/activity_main_btn_start_test"/>
+
+            <Button
+                android:id="@+id/create_new_test"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="create new ecg test"
+                android:textAllCaps="false"
+                app:layout_constraintStart_toStartOf="@id/validate_test"
+                app:layout_constraintEnd_toEndOf="@id/validate_test"
+                app:layout_constraintTop_toBottomOf="@id/validate_test"
+                />
 
             <TextView
                 android:id="@+id/result"
@@ -263,7 +283,7 @@
                 android:scrollbars="vertical"
                 android:padding="2dp"
                 android:textSize="12sp"
-                app:layout_constraintTop_toBottomOf="@id/activity_main_btn_start_test"
+                app:layout_constraintTop_toBottomOf="@id/create_new_test"
                 />
 
             <TextView
@@ -272,6 +292,7 @@
                 android:layout_height="wrap_content"
                 android:autoLink="web"
                 app:layout_constraintTop_toBottomOf="@id/result"/>
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

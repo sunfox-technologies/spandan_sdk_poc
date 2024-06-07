@@ -5,26 +5,34 @@ import `in`.sunfox.healthcare.commons.android.spandan_sdk.OnInitializationComple
 import `in`.sunfox.healthcare.commons.android.spandan_sdk.SpandanSDK
 import android.app.Application
 import android.util.Log
+import android.widget.Toast
+import java.io.File
+import java.io.FileInputStream
+import java.util.Properties
 
-class ApplicationClass:Application() {
-
-    var token : String?=null
+class ApplicationClass : Application() {
 
     /**
      * step :-1
      * sdk initialization*/
     override fun onCreate() {
         super.onCreate()
-        SpandanSDK.initialize(this@ApplicationClass,apiKey = "enter api key", verifierToken = "enter verifier token", onInitializationCompleteListener = object : OnInitializationCompleteListener{
-            override fun onInitializationSuccess(authenticationToken: String) {
+        SpandanSDK.initialize(this,
+            masterKey = BuildConfig.masterKey,
+            verifierToken = BuildConfig.verifierToken,
+            onInitializationCompleteListener = object : OnInitializationCompleteListener {
+                override fun onInitializationSuccess() {
+                    Toast.makeText(
+                        this@ApplicationClass,
+                        "token initialized successfully...",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
 
-                token = authenticationToken
+                override fun onInitializationFailed(message: String) {
+//                    throw Exception(message)
+                }
             }
-
-            override fun onInitializationFailed(message: String) {
-                Log.d("BuldToken.TAG", "onInitializationSuccess: $message")
-            }
-
-        })
+        )
     }
 }
