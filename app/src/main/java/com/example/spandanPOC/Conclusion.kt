@@ -1,4 +1,4 @@
-package com.example.beatopoc
+package com.example.spandanPOC
 
 data class Conclusion(
     val baseline_wandering: Boolean,

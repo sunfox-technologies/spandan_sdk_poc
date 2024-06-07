@@ -1,9 +1,7 @@
-package com.example.beatopoc
+package com.example.spandanPOC
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import kotlinx.coroutines.joinAll
-import java.lang.String.join
 import java.nio.ByteBuffer
 import java.util.Base64
 

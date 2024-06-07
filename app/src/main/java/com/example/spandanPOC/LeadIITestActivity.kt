@@ -1,4 +1,4 @@
-package com.example.beatopoc
+package com.example.spandanPOC
 
 import android.app.ProgressDialog
 import android.graphics.Color
@@ -8,7 +8,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import com.example.beatopoc.databinding.ActivityLeadIitestBinding
+import com.example.spandanPOC.databinding.ActivityLeadIitestBinding
 import `in`.sunfox.healthcare.commons.android.spandan_sdk.SpandanSDK
 import `in`.sunfox.healthcare.commons.android.spandan_sdk.collection.EcgTest
 import `in`.sunfox.healthcare.commons.android.spandan_sdk.collection.EcgTestCallback
@@ -20,9 +20,10 @@ import `in`.sunfox.healthcare.commons.android.spandan_sdk.enums.EcgPosition
 import `in`.sunfox.healthcare.commons.android.spandan_sdk.enums.EcgTestType
 import `in`.sunfox.healthcare.commons.android.spandan_sdk.PDFReportGenerationCallback
 import `in`.sunfox.healthcare.commons.android.spandan_sdk.model.GenerateReportModel
-import `in`.sunfox.healthcare.commons.android.spandan_sdk.retrofit_helper.GenerateReportResult
 import `in`.sunfox.healthcare.commons.android.spandan_sdk.retrofit_helper.PatientData
+import `in`.sunfox.healthcare.commons.android.spandan_sdk.retrofit_helper.ReportGenerationResult
 import `in`.sunfox.healthcare.java.commons.ecg_processor.conclusions.conclusion.LeadTwoConclusion
+import `in`.sunfox.healthcare.java.commons.ecg_processor.conclusions.data.EcgData
 
 class LeadIITestActivity : AppCompatActivity(), EcgTestCallback,
     OnDeviceConnectionStateChangeListener {
@@ -30,7 +31,7 @@ class LeadIITestActivity : AppCompatActivity(), EcgTestCallback,
     private lateinit var spandanSDK: SpandanSDK
     private var ecgPoints: HashMap<EcgPosition, ArrayList<Double>> = hashMapOf()
     private var ecgReport: EcgReport? = null
-    private var ecgApiResult: GenerateReportResult? = null
+    private var ecgApiResult: ReportGenerationResult? = null
     private lateinit var ecgTest: EcgTest
     private lateinit var ecgPosition: EcgPosition
     private lateinit var progressDialog: ProgressDialog
@@ -117,11 +118,10 @@ class LeadIITestActivity : AppCompatActivity(), EcgTestCallback,
                 Log.d("SdkImpl.TAG", "onCreate: impl $ecgPoints")
                 showProgressDialog()
                 try{
-                    spandanSDK.generateReportWithPdf(
+                    spandanSDK.generatePdfReport(
                         ecgTest = ecgTest,
-                        inputForGenerateReport =
-                        GenerateReportModel(
-                            patientData = PatientData(
+                        patientData =
+                        PatientData(
                                 age = "134",
                                 firstName = "first",
                                 lastName = "last",
@@ -129,15 +129,12 @@ class LeadIITestActivity : AppCompatActivity(), EcgTestCallback,
                                 height = "147",
                                 weight = "60"
                             ),
-                            generatePdfReport = true,
-                            processorType = "LEAD_TWO"
-                        ),
                         pdfReportGenerationCallback = object : PDFReportGenerationCallback
                              {
-                            override fun onReportGenerationSuccess(ecgReport: GenerateReportResult) {
-                                this@LeadIITestActivity.ecgApiResult = ecgReport
+                            override fun onReportGenerationSuccess(reportGenerationResult: ReportGenerationResult) {
+                                this@LeadIITestActivity.ecgApiResult = reportGenerationResult
                                 runOnUiThread {
-                                    binding.pdfLinkUrl.text = ecgReport.data.url
+                                    binding.pdfLinkUrl.text = reportGenerationResult.pdfReportUrl
                                     hideProgressDialog()
                                 }
                             }
@@ -158,9 +155,9 @@ class LeadIITestActivity : AppCompatActivity(), EcgTestCallback,
 
             binding.activityMainBtnShowConclusion.setOnClickListener {
                 ecgApiResult?.let {
-                    val conclusion = (ecgReport?.conclusion as LeadTwoConclusion)
-                    val characteristics = ecgApiResult?.data?.characteristics
-                    binding.result.text = "$conclusion $characteristics"
+                    val conclusion = (it?.conclusions)
+                    val characteristics = ecgApiResult?.characteristics
+                    binding.result.text = "$conclusion $characteristics ${it.pdfReportUrl}"
                 }
             }
         } catch (e: Exception) {
@@ -189,7 +186,7 @@ class LeadIITestActivity : AppCompatActivity(), EcgTestCallback,
             .show()
     }
 
-    override fun onEcgTestComplete(hashMap: HashMap<EcgPosition, ArrayList<Double>>) {
+    override fun onEcgTestCompleted(hashMap: HashMap<EcgPosition, ArrayList<Double>>) {
         Toast.makeText(this, "test completed...", Toast.LENGTH_SHORT).show()
     }
 
@@ -204,7 +201,7 @@ class LeadIITestActivity : AppCompatActivity(), EcgTestCallback,
             binding.activityMainTextviewTestStatus.text = data
         }
     }
-    override fun onPositionRecordingComplete(
+    override fun onPositionRecordingCompleted(
         ecgPosition: EcgPosition,
         ecgPoints: ArrayList<Double>?,
     ) {

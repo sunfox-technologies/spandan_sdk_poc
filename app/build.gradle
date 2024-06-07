@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace 'com.example.beatopoc'
+    namespace 'com.example.spandanPOC'
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.example.beatopoc"
+        applicationId "com.example.spandanPOC"
         minSdk 21
         targetSdk 34
         versionCode 1

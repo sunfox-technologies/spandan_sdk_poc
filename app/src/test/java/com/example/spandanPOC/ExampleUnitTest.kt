@@ -1,4 +1,4 @@
-package com.example.beatopoc
+package com.example.spandanPOC
 
 import org.junit.Test
 

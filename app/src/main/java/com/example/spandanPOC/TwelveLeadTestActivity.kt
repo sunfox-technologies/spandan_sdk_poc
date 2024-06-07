@@ -1,4 +1,4 @@
-package com.example.beatopoc
+package com.example.spandanPOC
 
 import android.app.ProgressDialog
 import `in`.sunfox.healthcare.commons.android.spandan_sdk.SpandanSDK
@@ -13,13 +13,12 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
-import com.example.beatopoc.databinding.ActivityTwelveLeadTestBinding
+import com.example.spandanPOC.databinding.ActivityTwelveLeadTestBinding
 import `in`.sunfox.healthcare.commons.android.spandan_sdk.PDFReportGenerationCallback
 import `in`.sunfox.healthcare.commons.android.spandan_sdk.connection.DeviceInfo
 import `in`.sunfox.healthcare.commons.android.spandan_sdk.connection.OnDeviceConnectionStateChangeListener
-import `in`.sunfox.healthcare.commons.android.spandan_sdk.model.GenerateReportModel
-import `in`.sunfox.healthcare.commons.android.spandan_sdk.retrofit_helper.GenerateReportResult
 import `in`.sunfox.healthcare.commons.android.spandan_sdk.retrofit_helper.PatientData
+import `in`.sunfox.healthcare.commons.android.spandan_sdk.retrofit_helper.ReportGenerationResult
 import `in`.sunfox.healthcare.java.commons.ecg_processor.conclusions.conclusion.TwelveLeadConclusion
 
 class TwelveLeadTestActivity : AppCompatActivity() {
@@ -27,7 +26,7 @@ class TwelveLeadTestActivity : AppCompatActivity() {
 
     private lateinit var spandanSDK: SpandanSDK
     private var ecgPoints: HashMap<EcgPosition, ArrayList<Double>> = hashMapOf()
-    private var ecgApiResult: GenerateReportResult? = null
+    private var ecgApiResult: ReportGenerationResult? = null
     private lateinit var ecgTest: EcgTest
     private lateinit var ecgPosition: EcgPosition
     private lateinit var progressDialog: ProgressDialog
@@ -157,9 +156,8 @@ class TwelveLeadTestActivity : AppCompatActivity() {
             binding.activityMainBtnGenerateReport.setOnClickListener {
                 try {
                     showProgressDialog()
-                    spandanSDK.generateReportWithPdf(
+                    spandanSDK.generatePdfReport(
                         ecgTest = ecgTest,
-                        inputForGenerateReport = GenerateReportModel(
                             patientData = PatientData(
                                 age = "34",
                                 firstName = "first",
@@ -168,21 +166,18 @@ class TwelveLeadTestActivity : AppCompatActivity() {
                                 height = "147",
                                 weight = "60",
                             ),
-                            generatePdfReport = true,
-                            processorType = "TWELVE_LEAD"
-                        ),
                         pdfReportGenerationCallback = object : PDFReportGenerationCallback {
                             override fun onReportGenerationFailed(errorMsg: String) {
                                 hideProgressDialog()
                                 binding.pdfLinkUrl.text = errorMsg
                             }
 
-                            override fun onReportGenerationSuccess(ecgReport: GenerateReportResult) {
-                                this@TwelveLeadTestActivity.ecgApiResult = ecgReport
+                            override fun onReportGenerationSuccess(reportGenerationResult: ReportGenerationResult) {
+                                this@TwelveLeadTestActivity.ecgApiResult = reportGenerationResult
                                 runOnUiThread {
                                     hideProgressDialog()
                                     binding.activityMainBtnShowConclusion.visibility = View.VISIBLE
-                                    binding.pdfLinkUrl.text = ecgReport.data.url
+                                    binding.pdfLinkUrl.text = reportGenerationResult.pdfReportUrl
                                 }
                             }
 
@@ -196,8 +191,8 @@ class TwelveLeadTestActivity : AppCompatActivity() {
 
             binding.activityMainBtnShowConclusion.setOnClickListener {
                 ecgApiResult?.let {
-                    val conclusion = (it.data.conclusions as TwelveLeadConclusion)
-                    val characteristics = it.data.characteristics
+                    val conclusion = it.conclusions
+                    val characteristics = it.characteristics
                     binding.reportConclusion.text = "$characteristics"
                 }
             }
@@ -217,7 +212,7 @@ class TwelveLeadTestActivity : AppCompatActivity() {
 
             }
 
-            override fun onEcgTestComplete(hashMap: HashMap<EcgPosition, ArrayList<Double>>) {
+            override fun onEcgTestCompleted(hashMap: HashMap<EcgPosition, ArrayList<Double>>) {
 
             }
 
@@ -264,7 +259,7 @@ class TwelveLeadTestActivity : AppCompatActivity() {
                 }
             }
 
-            override fun onPositionRecordingComplete(
+            override fun onPositionRecordingCompleted(
                 ecgPosition: EcgPosition,
                 ecgPoints: ArrayList<Double>?,
             ) {

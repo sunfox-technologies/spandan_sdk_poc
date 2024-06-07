@@ -1,4 +1,4 @@
-package com.example.beatopoc
+package com.example.spandanPOC
 
 data class SubjectDetails(
     val age: Int,

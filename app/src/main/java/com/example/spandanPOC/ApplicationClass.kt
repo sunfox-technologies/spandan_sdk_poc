@@ -1,14 +1,10 @@
-package com.example.beatopoc
+package com.example.spandanPOC
 
 
 import `in`.sunfox.healthcare.commons.android.spandan_sdk.OnInitializationCompleteListener
 import `in`.sunfox.healthcare.commons.android.spandan_sdk.SpandanSDK
 import android.app.Application
-import android.util.Log
 import android.widget.Toast
-import java.io.File
-import java.io.FileInputStream
-import java.util.Properties
 
 class ApplicationClass : Application() {
 

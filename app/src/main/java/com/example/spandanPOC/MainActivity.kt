@@ -1,14 +1,11 @@
-package com.example.beatopoc
+package com.example.spandanPOC
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Base64
-import android.util.Log
-import android.widget.Toast
 import androidx.databinding.DataBindingUtil
-import com.example.beatopoc.databinding.ActivityMainBinding
-import com.hbb20.CountryCodePicker
+import com.example.spandanPOC.databinding.ActivityMainBinding
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.ObjectInputStream
