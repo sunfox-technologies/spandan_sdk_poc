@@ -4,6 +4,7 @@ package com.example.spandanPOC
 import `in`.sunfox.healthcare.commons.android.spandan_sdk.OnInitializationCompleteListener
 import `in`.sunfox.healthcare.commons.android.spandan_sdk.SpandanSDK
 import android.app.Application
+import android.util.Log
 import android.widget.Toast
 
 class ApplicationClass : Application() {
@@ -26,7 +27,7 @@ class ApplicationClass : Application() {
                 }
 
                 override fun onInitializationFailed(message: String) {
-//                    throw Exception(message)
+                    Log.d("Spandan.TAG", "onInitializationFailed: $message")
                 }
             }
         )

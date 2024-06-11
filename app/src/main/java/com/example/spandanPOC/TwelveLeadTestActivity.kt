@@ -14,12 +14,11 @@ import android.view.View
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import com.example.spandanPOC.databinding.ActivityTwelveLeadTestBinding
-import `in`.sunfox.healthcare.commons.android.spandan_sdk.PDFReportGenerationCallback
 import `in`.sunfox.healthcare.commons.android.spandan_sdk.connection.DeviceInfo
 import `in`.sunfox.healthcare.commons.android.spandan_sdk.connection.OnDeviceConnectionStateChangeListener
+import `in`.sunfox.healthcare.commons.android.spandan_sdk.listener.PDFReportGenerationCallback
 import `in`.sunfox.healthcare.commons.android.spandan_sdk.retrofit_helper.PatientData
 import `in`.sunfox.healthcare.commons.android.spandan_sdk.retrofit_helper.ReportGenerationResult
-import `in`.sunfox.healthcare.java.commons.ecg_processor.conclusions.conclusion.TwelveLeadConclusion
 
 class TwelveLeadTestActivity : AppCompatActivity() {
     private lateinit var binding: ActivityTwelveLeadTestBinding
@@ -48,23 +47,40 @@ class TwelveLeadTestActivity : AppCompatActivity() {
              * set callback for device connectivity.*/
             spandanSDK.setOnDeviceConnectionStateChangedListener(object :
                 OnDeviceConnectionStateChangeListener {
-                override fun onDeviceConnectionStateChanged(deviceConnectionState: DeviceConnectionState) {
-                    when (deviceConnectionState) {
-                        DeviceConnectionState.DISCONNECTED -> {
-                            binding.activityMainLayoutDeviceConnectionStatus.setBackgroundColor(
-                                Color.RED
-                            )
-                        }
+//                override fun onDeviceConnectionStateChanged(deviceConnectionState: DeviceConnectionState) {
+//                    when (deviceConnectionState) {
+//                        DeviceConnectionState.DISCONNECTED -> {
+//                            binding.activityMainLayoutDeviceConnectionStatus.setBackgroundColor(
+//                                Color.RED
+//                            )
+//                        }
+//
+//                        DeviceConnectionState.CONNECTED -> {}
+//                        DeviceConnectionState.VERIFICATION_TIME_OUT -> {}
+//                        DeviceConnectionState.USB_CONNECTION_PERMISSION_DENIED -> {}
+//                    }
+//                }
 
-                        DeviceConnectionState.CONNECTED -> {}
-                        DeviceConnectionState.VERIFICATION_TIME_OUT -> {}
-                        DeviceConnectionState.USB_CONNECTION_PERMISSION_DENIED -> {}
-                    }
+
+                override fun onConnectionTimedOut() {
+
                 }
 
-                override fun onDeviceTypeChange(deviceType: String) {}
+                override fun onDeviceAttached() {
 
-                override fun onDeviceVerified(deviceInfo: DeviceInfo) {}
+                }
+
+                override fun onDeviceConnected(deviceInfo: DeviceInfo) {
+
+                }
+
+                override fun onDeviceDisconnected() {
+
+                }
+
+                override fun onUsbPermissionDenied() {
+
+                }
             })
             /**
              * step :-3
@@ -147,7 +163,7 @@ class TwelveLeadTestActivity : AppCompatActivity() {
 
 
             binding.validateTest.setOnClickListener {
-                ecgTest.completeEcgTest()
+                ecgTest.completeTest()
                 binding.activityMainBtnGenerateReport.visibility = View.VISIBLE
             }
             /**
@@ -193,7 +209,7 @@ class TwelveLeadTestActivity : AppCompatActivity() {
                 ecgApiResult?.let {
                     val conclusion = it.conclusions
                     val characteristics = it.characteristics
-                    binding.reportConclusion.text = "$characteristics"
+                    binding.reportConclusion.text = "$characteristics $conclusion"
                 }
             }
         } catch (e: Exception) {

@@ -18,19 +18,16 @@ import `in`.sunfox.healthcare.commons.android.spandan_sdk.connection.OnDeviceCon
 import `in`.sunfox.healthcare.commons.android.spandan_sdk.enums.DeviceConnectionState
 import `in`.sunfox.healthcare.commons.android.spandan_sdk.enums.EcgPosition
 import `in`.sunfox.healthcare.commons.android.spandan_sdk.enums.EcgTestType
-import `in`.sunfox.healthcare.commons.android.spandan_sdk.PDFReportGenerationCallback
+import `in`.sunfox.healthcare.commons.android.spandan_sdk.listener.PDFReportGenerationCallback
 import `in`.sunfox.healthcare.commons.android.spandan_sdk.model.GenerateReportModel
 import `in`.sunfox.healthcare.commons.android.spandan_sdk.retrofit_helper.PatientData
 import `in`.sunfox.healthcare.commons.android.spandan_sdk.retrofit_helper.ReportGenerationResult
-import `in`.sunfox.healthcare.java.commons.ecg_processor.conclusions.conclusion.LeadTwoConclusion
-import `in`.sunfox.healthcare.java.commons.ecg_processor.conclusions.data.EcgData
 
 class LeadIITestActivity : AppCompatActivity(), EcgTestCallback,
     OnDeviceConnectionStateChangeListener {
     private lateinit var binding: ActivityLeadIitestBinding
     private lateinit var spandanSDK: SpandanSDK
     private var ecgPoints: HashMap<EcgPosition, ArrayList<Double>> = hashMapOf()
-    private var ecgReport: EcgReport? = null
     private var ecgApiResult: ReportGenerationResult? = null
     private lateinit var ecgTest: EcgTest
     private lateinit var ecgPosition: EcgPosition
@@ -79,7 +76,7 @@ class LeadIITestActivity : AppCompatActivity(), EcgTestCallback,
 
 
             binding.validateTest.setOnClickListener {
-                ecgTest.completeEcgTest()
+                ecgTest.completeTest()
                 binding.activityMainBtnGenerateReport.visibility = View.VISIBLE
             }
 
@@ -157,7 +154,7 @@ class LeadIITestActivity : AppCompatActivity(), EcgTestCallback,
                 ecgApiResult?.let {
                     val conclusion = (it?.conclusions)
                     val characteristics = ecgApiResult?.characteristics
-                    binding.result.text = "$conclusion $characteristics ${it.pdfReportUrl}"
+                    binding.result.text = "$conclusion $characteristics"
                 }
             }
         } catch (e: Exception) {
@@ -210,22 +207,42 @@ class LeadIITestActivity : AppCompatActivity(), EcgTestCallback,
         this@LeadIITestActivity.ecgPoints[ecgPosition] = ecgPoints
     }
 
-    override fun onDeviceConnectionStateChanged(deviceConnectionState: DeviceConnectionState) {
-        when (deviceConnectionState) {
-            DeviceConnectionState.DISCONNECTED -> {
-                binding.activityMainLayoutDeviceConnectionStatus.setBackgroundColor(Color.RED)
-            }
-            DeviceConnectionState.CONNECTED -> {}
-            DeviceConnectionState.VERIFICATION_TIME_OUT -> {}
-            DeviceConnectionState.USB_CONNECTION_PERMISSION_DENIED -> {}
-        }
+//    override fun onDeviceConnectionStateChanged(deviceConnectionState: DeviceConnectionState) {
+//        when (deviceConnectionState) {
+//            DeviceConnectionState.DISCONNECTED -> {
+//                binding.activityMainLayoutDeviceConnectionStatus.setBackgroundColor(Color.RED)
+//            }
+//            DeviceConnectionState.CONNECTED -> {}
+//            DeviceConnectionState.VERIFICATION_TIME_OUT -> {}
+//            DeviceConnectionState.USB_CONNECTION_PERMISSION_DENIED -> {}
+//        }
+//    }
+
+
+
+    val TAG = "MyTag.TAG"
+    override fun onConnectionTimedOut() {
+
+        binding.result.text = "timeout"
     }
 
-    override fun onDeviceTypeChange(deviceType: String) {
+    override fun onDeviceAttached() {
 
+        binding.result.text = "attach"
     }
 
-    override fun onDeviceVerified(deviceInfo: DeviceInfo) {
-//        binding.activityMainLayoutDeviceConnectionStatus.setBackgroundColor(if (SeriCom.isDeviceConnected()) Color.GREEN else Color.RED)
+    override fun onDeviceConnected(deviceInfo: DeviceInfo) {
+
+        binding.result.text = "$deviceInfo"
+    }
+
+    override fun onDeviceDisconnected() {
+
+        binding.result.text = "disconnect"
+    }
+
+    override fun onUsbPermissionDenied() {
+
+        binding.result.text = "denied"
     }
 }
