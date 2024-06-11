@@ -4,7 +4,6 @@ import android.app.ProgressDialog
 import `in`.sunfox.healthcare.commons.android.spandan_sdk.SpandanSDK
 import `in`.sunfox.healthcare.commons.android.spandan_sdk.collection.EcgTest
 import `in`.sunfox.healthcare.commons.android.spandan_sdk.collection.EcgTestCallback
-import `in`.sunfox.healthcare.commons.android.spandan_sdk.enums.DeviceConnectionState
 import `in`.sunfox.healthcare.commons.android.spandan_sdk.enums.EcgPosition
 import `in`.sunfox.healthcare.commons.android.spandan_sdk.enums.EcgTestType
 import android.graphics.Color
@@ -47,40 +46,15 @@ class TwelveLeadTestActivity : AppCompatActivity() {
              * set callback for device connectivity.*/
             spandanSDK.setOnDeviceConnectionStateChangedListener(object :
                 OnDeviceConnectionStateChangeListener {
-//                override fun onDeviceConnectionStateChanged(deviceConnectionState: DeviceConnectionState) {
-//                    when (deviceConnectionState) {
-//                        DeviceConnectionState.DISCONNECTED -> {
-//                            binding.activityMainLayoutDeviceConnectionStatus.setBackgroundColor(
-//                                Color.RED
-//                            )
-//                        }
-//
-//                        DeviceConnectionState.CONNECTED -> {}
-//                        DeviceConnectionState.VERIFICATION_TIME_OUT -> {}
-//                        DeviceConnectionState.USB_CONNECTION_PERMISSION_DENIED -> {}
-//                    }
-//                }
+                override fun onConnectionTimedOut() {}
 
+                override fun onDeviceAttached() {}
 
-                override fun onConnectionTimedOut() {
+                override fun onDeviceConnected(deviceInfo: DeviceInfo) {}
 
-                }
+                override fun onDeviceDisconnected() {}
 
-                override fun onDeviceAttached() {
-
-                }
-
-                override fun onDeviceConnected(deviceInfo: DeviceInfo) {
-
-                }
-
-                override fun onDeviceDisconnected() {
-
-                }
-
-                override fun onUsbPermissionDenied() {
-
-                }
+                override fun onUsbPermissionDenied() {}
             })
             /**
              * step :-3

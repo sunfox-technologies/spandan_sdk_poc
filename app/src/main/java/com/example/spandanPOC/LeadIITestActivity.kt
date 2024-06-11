@@ -12,14 +12,11 @@ import com.example.spandanPOC.databinding.ActivityLeadIitestBinding
 import `in`.sunfox.healthcare.commons.android.spandan_sdk.SpandanSDK
 import `in`.sunfox.healthcare.commons.android.spandan_sdk.collection.EcgTest
 import `in`.sunfox.healthcare.commons.android.spandan_sdk.collection.EcgTestCallback
-import `in`.sunfox.healthcare.commons.android.spandan_sdk.conclusion.EcgReport
 import `in`.sunfox.healthcare.commons.android.spandan_sdk.connection.DeviceInfo
 import `in`.sunfox.healthcare.commons.android.spandan_sdk.connection.OnDeviceConnectionStateChangeListener
-import `in`.sunfox.healthcare.commons.android.spandan_sdk.enums.DeviceConnectionState
 import `in`.sunfox.healthcare.commons.android.spandan_sdk.enums.EcgPosition
 import `in`.sunfox.healthcare.commons.android.spandan_sdk.enums.EcgTestType
 import `in`.sunfox.healthcare.commons.android.spandan_sdk.listener.PDFReportGenerationCallback
-import `in`.sunfox.healthcare.commons.android.spandan_sdk.model.GenerateReportModel
 import `in`.sunfox.healthcare.commons.android.spandan_sdk.retrofit_helper.PatientData
 import `in`.sunfox.healthcare.commons.android.spandan_sdk.retrofit_helper.ReportGenerationResult
 
@@ -62,7 +59,6 @@ class LeadIITestActivity : AppCompatActivity(), EcgTestCallback,
                 try {
                     ecgTest = spandanSDK.createTest(
                         EcgTestType.LEAD_TWO,this
-//                    ,(application as ApplicationClass).token!!
                     )
                 }catch (e:Exception){
                     Toast.makeText(this, e.toString(), Toast.LENGTH_SHORT).show()
@@ -80,10 +76,7 @@ class LeadIITestActivity : AppCompatActivity(), EcgTestCallback,
                 binding.activityMainBtnGenerateReport.visibility = View.VISIBLE
             }
 
-            binding.progressBar8.setOnClickListener {
-                //ecgPosition = EcgPosition.LEAD_2
-                //binding.activityMainTextviewCurrentPosition.text = EcgPosition.LEAD_2.name
-            }
+            binding.progressBar8.setOnClickListener {}
 
             /***
              * step :-4
@@ -103,7 +96,6 @@ class LeadIITestActivity : AppCompatActivity(), EcgTestCallback,
                 }catch (e:Exception){
                     Toast.makeText(this, e.toString(), Toast.LENGTH_SHORT).show()
                     binding.result.text = e.toString()
-//                    Toast.makeText(this, e.toString(), Toast.LENGTH_SHORT).show()
                 }
             }
 
@@ -207,20 +199,6 @@ class LeadIITestActivity : AppCompatActivity(), EcgTestCallback,
         this@LeadIITestActivity.ecgPoints[ecgPosition] = ecgPoints
     }
 
-//    override fun onDeviceConnectionStateChanged(deviceConnectionState: DeviceConnectionState) {
-//        when (deviceConnectionState) {
-//            DeviceConnectionState.DISCONNECTED -> {
-//                binding.activityMainLayoutDeviceConnectionStatus.setBackgroundColor(Color.RED)
-//            }
-//            DeviceConnectionState.CONNECTED -> {}
-//            DeviceConnectionState.VERIFICATION_TIME_OUT -> {}
-//            DeviceConnectionState.USB_CONNECTION_PERMISSION_DENIED -> {}
-//        }
-//    }
-
-
-
-    val TAG = "MyTag.TAG"
     override fun onConnectionTimedOut() {
 
         binding.result.text = "timeout"
