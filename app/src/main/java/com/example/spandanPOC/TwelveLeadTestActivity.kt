@@ -50,9 +50,17 @@ class TwelveLeadTestActivity : AppCompatActivity() {
 
                 override fun onDeviceAttached() {}
 
-                override fun onDeviceConnected(deviceInfo: DeviceInfo) {}
+                override fun onDeviceConnected(deviceInfo: DeviceInfo) {
+                    binding.activityMainLayoutDeviceConnectionStatus.setBackgroundColor(
+                        Color.GREEN
+                    )
+                }
 
-                override fun onDeviceDisconnected() {}
+                override fun onDeviceDisconnected() {
+                    binding.activityMainLayoutDeviceConnectionStatus.setBackgroundColor(
+                        Color.RED
+                    )
+                }
 
                 override fun onUsbPermissionDenied() {}
             })
@@ -63,6 +71,7 @@ class TwelveLeadTestActivity : AppCompatActivity() {
                 createNewEcgTest()
             }catch (e:Exception){
                 Toast.makeText(this, e.toString(), Toast.LENGTH_SHORT).show()
+                binding.createNewTest.visibility = View.VISIBLE
             }
 
 
@@ -130,15 +139,21 @@ class TwelveLeadTestActivity : AppCompatActivity() {
                         ).show()
                     else
                         ecgTest.start(ecgPosition)
+                    binding.reportConclusion.text = ""
                 }catch (e:Exception){
                     binding.reportConclusion.text = e.toString()
                 }
             }
 
 
-            binding.validateTest.setOnClickListener {
-                ecgTest.completeTest()
-                binding.activityMainBtnGenerateReport.visibility = View.VISIBLE
+            binding.competeEcgTest.setOnClickListener {
+                try{
+                    ecgTest.completeTest()
+                    binding.activityMainBtnGenerateReport.visibility = View.VISIBLE
+                    binding.reportConclusion.text = ""
+                }catch (e:Exception){
+                    binding.reportConclusion.text = e.toString()
+                }
             }
             /**
              * step :-5
@@ -166,6 +181,7 @@ class TwelveLeadTestActivity : AppCompatActivity() {
                                 this@TwelveLeadTestActivity.ecgApiResult = reportGenerationResult
                                 runOnUiThread {
                                     hideProgressDialog()
+                                    binding.createNewTest.visibility = View.VISIBLE
                                     binding.activityMainBtnShowConclusion.visibility = View.VISIBLE
                                     binding.pdfLinkUrl.text = reportGenerationResult.pdfReportUrl
                                 }
@@ -193,6 +209,16 @@ class TwelveLeadTestActivity : AppCompatActivity() {
     }
 
     private fun createNewEcgTest() {
+        binding.progressBar.progress=0
+        binding.progressBar8.progress=0
+        binding.progressBar2.progress=0
+        binding.progressBar3.progress=0
+        binding.progressBar4.progress=0
+        binding.progressBar5.progress=0
+        binding.progressBar6.progress=0
+        binding.progressBar7.progress=0
+        binding.reportConclusion.text = ""
+        binding.pdfLinkUrl.text = ""
         ecgTest = spandanSDK.createTest(EcgTestType.TWELVE_LEAD, object : EcgTestCallback {
             override fun onTestFailed(statusCode: Int) {
 
@@ -262,6 +288,7 @@ class TwelveLeadTestActivity : AppCompatActivity() {
                 }
                 if (ecgPoints != null)
                     this@TwelveLeadTestActivity.ecgPoints[ecgPosition] = ecgPoints
+                binding.competeEcgTest.visibility = View.VISIBLE
             }
 
         }

@@ -17,9 +17,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         binding.twelveLeadTest.setOnClickListener {
-//            if ((application as ApplicationClass).token == null) {
-//                Toast.makeText(this, "token not initialized", Toast.LENGTH_SHORT).show()
-//            } else
                 startActivity(Intent(this, TwelveLeadTestActivity::class.java))
         }
 

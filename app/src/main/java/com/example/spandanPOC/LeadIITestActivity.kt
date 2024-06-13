@@ -8,6 +8,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.transition.Visibility
 import com.example.spandanPOC.databinding.ActivityLeadIitestBinding
 import `in`.sunfox.healthcare.commons.android.spandan_sdk.SpandanSDK
 import `in`.sunfox.healthcare.commons.android.spandan_sdk.collection.EcgTest
@@ -20,6 +21,7 @@ import `in`.sunfox.healthcare.commons.android.spandan_sdk.listener.PDFReportGene
 import `in`.sunfox.healthcare.commons.android.spandan_sdk.retrofit_helper.PatientData
 import `in`.sunfox.healthcare.commons.android.spandan_sdk.retrofit_helper.ReportGenerationResult
 
+//class LeadIITestActivity : AppCompatActivity(), EcgTestCallback,
 class LeadIITestActivity : AppCompatActivity(), EcgTestCallback,
     OnDeviceConnectionStateChangeListener {
     private lateinit var binding: ActivityLeadIitestBinding
@@ -51,18 +53,18 @@ class LeadIITestActivity : AppCompatActivity(), EcgTestCallback,
                 ecgTest = spandanSDK.createTest(
                     EcgTestType.LEAD_TWO, this
                 )
-            }catch (e:Exception){
+            } catch (e: Exception) {
+                binding.createNewTest.visibility = View.VISIBLE
                 Toast.makeText(this, e.toString(), Toast.LENGTH_SHORT).show()
             }
 
             binding.createNewTest.setOnClickListener {
-                try {
-                    ecgTest = spandanSDK.createTest(
-                        EcgTestType.LEAD_TWO,this
-                    )
-                }catch (e:Exception){
-                    Toast.makeText(this, e.toString(), Toast.LENGTH_SHORT).show()
-                }
+//                finish()
+//                startActivity(intent)
+                ecgTest = spandanSDK.createTest(EcgTestType.LEAD_TWO, this)
+                binding.progressBar8.progress=0
+                binding.pdfLinkUrl.text = ""
+                binding.result.text = ""
             }
 
 
@@ -71,9 +73,14 @@ class LeadIITestActivity : AppCompatActivity(), EcgTestCallback,
             )
 
 
-            binding.validateTest.setOnClickListener {
-                ecgTest.completeTest()
-                binding.activityMainBtnGenerateReport.visibility = View.VISIBLE
+            binding.completeTheTest.setOnClickListener {
+                try {
+                    ecgTest.completeTest()
+                    binding.result.text = ""
+                    binding.activityMainBtnGenerateReport.visibility = View.VISIBLE
+                } catch (e: Exception) {
+                    binding.result.text = e.toString()
+                }
             }
 
             binding.progressBar8.setOnClickListener {}
@@ -91,9 +98,12 @@ class LeadIITestActivity : AppCompatActivity(), EcgTestCallback,
                             .show()
                     else if (!::ecgPosition.isInitialized)
                         Toast.makeText(this, "please select any lead", Toast.LENGTH_SHORT).show()
-                    else
+                    else {
+                        Log.w("TEST_TAG", "onCreate: ${ecgTest.hashCode()}")
                         ecgTest.start(ecgPosition)
-                }catch (e:Exception){
+                        binding.result.text = ""
+                    }
+                } catch (e: Exception) {
                     Toast.makeText(this, e.toString(), Toast.LENGTH_SHORT).show()
                     binding.result.text = e.toString()
                 }
@@ -106,23 +116,24 @@ class LeadIITestActivity : AppCompatActivity(), EcgTestCallback,
             binding.activityMainBtnGenerateReport.setOnClickListener {
                 Log.d("SdkImpl.TAG", "onCreate: impl $ecgPoints")
                 showProgressDialog()
-                try{
+                try {
                     spandanSDK.generatePdfReport(
                         ecgTest = ecgTest,
                         patientData =
                         PatientData(
-                                age = "134",
-                                firstName = "first",
-                                lastName = "last",
-                                gender = "Male",
-                                height = "147",
-                                weight = "60"
-                            ),
-                        pdfReportGenerationCallback = object : PDFReportGenerationCallback
-                             {
+                            age = "134",
+                            firstName = "first",
+                            lastName = "last",
+                            gender = "Male",
+                            height = "147",
+                            weight = "60"
+                        ),
+                        pdfReportGenerationCallback = object : PDFReportGenerationCallback {
                             override fun onReportGenerationSuccess(reportGenerationResult: ReportGenerationResult) {
                                 this@LeadIITestActivity.ecgApiResult = reportGenerationResult
                                 runOnUiThread {
+                                    binding.activityMainBtnShowConclusion.visibility = View.VISIBLE
+                                    binding.createNewTest.visibility = View.VISIBLE
                                     binding.pdfLinkUrl.text = reportGenerationResult.pdfReportUrl
                                     hideProgressDialog()
                                 }
@@ -135,7 +146,8 @@ class LeadIITestActivity : AppCompatActivity(), EcgTestCallback,
                                 }
                             }
                         })
-                }catch (e:Exception){
+                    binding.result.text = ""
+                } catch (e: Exception) {
                     hideProgressDialog()
                     binding.result.text = e.toString()
                 }
@@ -149,6 +161,7 @@ class LeadIITestActivity : AppCompatActivity(), EcgTestCallback,
                     binding.result.text = "$conclusion $characteristics"
                 }
             }
+            binding.result.text = ""
         } catch (e: Exception) {
             Toast.makeText(this, e.message, Toast.LENGTH_SHORT).show()
             binding.result.text = e.toString()
@@ -166,8 +179,40 @@ class LeadIITestActivity : AppCompatActivity(), EcgTestCallback,
         progressDialog.dismiss()
     }
 
+    override fun onConnectionTimedOut() {
+
+        binding.activityMainTextviewTestStatus.text = "timeout"
+    }
+
+    override fun onDeviceAttached() {
+
+        binding.activityMainTextviewTestStatus.text = "attach"
+    }
+
+    override fun onDeviceConnected(deviceInfo: DeviceInfo) {
+
+        binding.activityMainLayoutDeviceConnectionStatus.setBackgroundColor(
+            Color.GREEN
+        )
+//        binding.result.text = "$deviceInfo"
+    }
+
+    override fun onDeviceDisconnected() {
+
+        binding.activityMainLayoutDeviceConnectionStatus.setBackgroundColor(
+            Color.RED
+        )
+        binding.activityMainTextviewTestStatus.text = "disconnect"
+    }
+
+    override fun onUsbPermissionDenied() {
+
+        binding.activityMainTextviewTestStatus.text = "denied"
+    }
+
     override fun onTestFailed(statusCode: Int) {
-        Toast.makeText(this, "onTestFailed $statusCode", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this@LeadIITestActivity, "onTestFailed $statusCode", Toast.LENGTH_SHORT)
+            .show()
     }
 
     override fun onTestStarted(ecgPosition: EcgPosition) {
@@ -176,7 +221,7 @@ class LeadIITestActivity : AppCompatActivity(), EcgTestCallback,
     }
 
     override fun onEcgTestCompleted(hashMap: HashMap<EcgPosition, ArrayList<Double>>) {
-        Toast.makeText(this, "test completed...", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this@LeadIITestActivity, "test completed...", Toast.LENGTH_SHORT).show()
     }
 
 
@@ -190,37 +235,15 @@ class LeadIITestActivity : AppCompatActivity(), EcgTestCallback,
             binding.activityMainTextviewTestStatus.text = data
         }
     }
+
     override fun onPositionRecordingCompleted(
         ecgPosition: EcgPosition,
         ecgPoints: ArrayList<Double>?,
     ) {
-        this.ecgPoints[ecgPosition] = ecgPoints!!
-        Toast.makeText(this, "${ecgPoints.size}", Toast.LENGTH_SHORT).show()
+        this@LeadIITestActivity.ecgPoints[ecgPosition] = ecgPoints!!
+        Toast.makeText(this@LeadIITestActivity, "${ecgPoints.size}", Toast.LENGTH_SHORT).show()
         this@LeadIITestActivity.ecgPoints[ecgPosition] = ecgPoints
+        binding.completeTheTest.visibility = View.VISIBLE
     }
 
-    override fun onConnectionTimedOut() {
-
-        binding.result.text = "timeout"
-    }
-
-    override fun onDeviceAttached() {
-
-        binding.result.text = "attach"
-    }
-
-    override fun onDeviceConnected(deviceInfo: DeviceInfo) {
-
-        binding.result.text = "$deviceInfo"
-    }
-
-    override fun onDeviceDisconnected() {
-
-        binding.result.text = "disconnect"
-    }
-
-    override fun onUsbPermissionDenied() {
-
-        binding.result.text = "denied"
-    }
 }

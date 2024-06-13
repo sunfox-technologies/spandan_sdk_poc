@@ -241,7 +241,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Generate Ecg Report"
-                android:visibility="visible"
+                android:visibility="gone"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/progressBar8"/>
@@ -251,16 +251,18 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Show Conclusion"
+                android:visibility="gone"
                 app:layout_constraintTop_toBottomOf="@id/activity_main_btn_generate_report"
                 app:layout_constraintStart_toStartOf="@id/activity_main_btn_generate_report"
                 app:layout_constraintEnd_toEndOf="@id/activity_main_btn_generate_report"/>
 
             <Button
-                android:id="@+id/validate_test"
+                android:id="@+id/complete_the_test"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="complete the test"
                 android:textAllCaps="false"
+                android:visibility="gone"
                 app:layout_constraintTop_toBottomOf="@id/activity_main_btn_start_test"
                 app:layout_constraintStart_toStartOf="@id/activity_main_btn_start_test"
                 app:layout_constraintEnd_toEndOf="@id/activity_main_btn_start_test"/>
@@ -271,9 +273,10 @@
                 android:layout_height="wrap_content"
                 android:text="create new ecg test"
                 android:textAllCaps="false"
-                app:layout_constraintStart_toStartOf="@id/validate_test"
-                app:layout_constraintEnd_toEndOf="@id/validate_test"
-                app:layout_constraintTop_toBottomOf="@id/validate_test"
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="@id/complete_the_test"
+                app:layout_constraintEnd_toEndOf="@id/complete_the_test"
+                app:layout_constraintTop_toBottomOf="@id/complete_the_test"
                 />
 
             <TextView
