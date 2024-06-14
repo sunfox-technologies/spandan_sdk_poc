@@ -62,7 +62,7 @@ class LeadIITestActivity : AppCompatActivity(), EcgTestCallback,
 //                finish()
 //                startActivity(intent)
                 ecgTest = spandanSDK.createTest(EcgTestType.LEAD_TWO, this)
-                binding.progressBar8.progress=0
+                binding.progressBar8.progress = 0
                 binding.pdfLinkUrl.text = ""
                 binding.result.text = ""
             }
@@ -125,7 +125,7 @@ class LeadIITestActivity : AppCompatActivity(), EcgTestCallback,
                             firstName = "first",
                             lastName = "last",
                             gender = "Male",
-                            height = "147",
+                            height = "300",
                             weight = "60"
                         ),
                         pdfReportGenerationCallback = object : PDFReportGenerationCallback {
@@ -142,11 +142,16 @@ class LeadIITestActivity : AppCompatActivity(), EcgTestCallback,
                             override fun onReportGenerationFailed(errorMsg: String) {
                                 runOnUiThread {
                                     hideProgressDialog()
-                                    binding.pdfLinkUrl.text = errorMsg
+                                    Toast.makeText(
+                                        this@LeadIITestActivity,
+                                        errorMsg,
+                                        Toast.LENGTH_SHORT
+                                    )
+                                        .show()
+                                    binding.result.text = errorMsg
                                 }
                             }
                         })
-                    binding.result.text = ""
                 } catch (e: Exception) {
                     hideProgressDialog()
                     binding.result.text = e.toString()
@@ -194,7 +199,7 @@ class LeadIITestActivity : AppCompatActivity(), EcgTestCallback,
         binding.activityMainLayoutDeviceConnectionStatus.setBackgroundColor(
             Color.GREEN
         )
-//        binding.result.text = "$deviceInfo"
+        binding.result.text = "$deviceInfo"
     }
 
     override fun onDeviceDisconnected() {
