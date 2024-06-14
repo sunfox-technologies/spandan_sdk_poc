@@ -8,7 +8,6 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.transition.Visibility
 import com.example.spandanPOC.databinding.ActivityLeadIitestBinding
 import `in`.sunfox.healthcare.commons.android.spandan_sdk.SpandanSDK
 import `in`.sunfox.healthcare.commons.android.spandan_sdk.collection.EcgTest
@@ -21,7 +20,6 @@ import `in`.sunfox.healthcare.commons.android.spandan_sdk.listener.PDFReportGene
 import `in`.sunfox.healthcare.commons.android.spandan_sdk.retrofit_helper.PatientData
 import `in`.sunfox.healthcare.commons.android.spandan_sdk.retrofit_helper.ReportGenerationResult
 
-//class LeadIITestActivity : AppCompatActivity(), EcgTestCallback,
 class LeadIITestActivity : AppCompatActivity(), EcgTestCallback,
     OnDeviceConnectionStateChangeListener {
     private lateinit var binding: ActivityLeadIitestBinding
